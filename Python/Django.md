@@ -9,3 +9,7 @@
 ### https://steady-milkshake-d59.notion.site/Django-admin-a3abf3a3cafe4a8a8e58a78f26539085
 
 ### https://steady-milkshake-d59.notion.site/Django-Media-c356d3d1cd37477f89a72656592f4f9b
+
+
+### https://doragoon.tistory.com/11
+### https://www.acmicpc.net/problem/2003
