@@ -1,0 +1,287 @@
+# 2장 빈 와이어링
+
+
+# 1. 빈 선언
+
+스프링은 컨테이너 기반의 프레임워크이다. 
+
+XML에 빈을 설정할 경우 스프링 설정 파일의 루트 엘리먼트는 스프링의 빈 스키마에서 <beans>엘리먼트다. 
+
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+  <!-- Bean declarations go here -->
+
+</beans>
+```
+
+**Spring은 Spring 컨테이너를 구성할 수 있는 여러 XML 네임스페이스와 함께 제공됩니다.**
+
+| 네임스페이스 | 목적 |
+| --- | --- |
+| aop | Aspect를 선언하고 @AspectJ 주석 클래스를 Spring aspect로 자동 프록시하기 위한 요소를 제공합니다. |
+| beans | 핵심 스프링 네임스페이스로 빈의 선언과 연결 방법을 정의할 수 있도록 한다.  |
+| context | Spring에서 직접 관리하지 않는 객체의 삽입 및 bean을 오토디텍트(autodetect)하고오토와이어링(autowiring)하는 기능을 포함하여 Spring 애플리케이션 컨텍스트를 구성하기 위한 요소와 함께 제공됩니다. |
+| jee | JNDI 및 EJB와 같은 Java EE API와의 통합을 제공합니다. |
+| jms | 메시지 구동 POJO를 선언하기 위한 구성 요소를 제공합니다. |
+| lang | Groovy, JRuby 또는 BeanShell 스크립트로 구현되는 Bean 선언을 사용으로 설정합니다. |
+| mvc | 애너테이션 지향 컨트롤러, 뷰 컨트롤러 및 인터셉터와 같은 Spring MVC 기능을 활성화합니다. |
+| 옥스엠 | Spring의 객체 대 XML 매핑 기능의 구성을 지원합니다. |
+| 텍사스 | 선언적 트랜잭션 구성을 제공합니다. |
+| 유틸리티 | 다양한 유틸리티 요소 선택. 컬렉션을 bean으로 선언하는 기능과 속성 자리 표시자 요소에 대한 지원을 포함합니다. |
+
+<bean> 요소는 스프링에서 가장 기본적인 설정 단위로 스프링에게 객체를 생성하라는 의미. 스프링 컨테이너가 빈ㅇ을 로드할 때 스프링은 기본 생성자를 이용해서 빈을 생성 
+
+### 생성자로 객체 레퍼런스 주입
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/7425d1a4-d29e-43c6-af55-e4b78ab3251a/Untitled.png)
+
+인자를 갖는 생성자를 이용하여 생성자는 int와 poem인자로 갖는다. 
+
+```java
+<bean id="poeticDuke"
+      class="com.springinaction.springidol.PoeticJuggler">
+    <constructor-arg value="15" />
+    <constructor-arg ref="sonnet29" />
+</bean>
+```
+
+생성자 주입을 통한 빈 생성은 좋은 방법이지만, 선언하려는 빈이 public 생성자가 없다면 팩토리 메소드를 통해 생성된 빈을 연결한다. 
+
+### 팩토리 메소드를 이용한 빈 생성
+
+때로는 객체를 생성할 수 있는 유일한 방법은 정적 팩토리 메소드를 통해서다. 스프링은 <bean> 요소의 엘리먼트 factory-method 애트리뷰트를 통해서 팩토리 생성 빈을 미리 연결한다. 
+
+자바에서는 싱글톤 클래스를 스프링에서 빈으로 설정하는 경우를 생각해보면 싱글톤 클래스는 보통 생성자는 private로 숨기고 정적 팩토리 메소드를 통해서만 인스턴스를 1회 생성한다. 
+
+![싱글톤 클래스예제](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f4d10dbb-8d62-4649-a3e4-a5616c4916d9/Untitled.png)
+
+싱글톤 클래스예제
+
+예제에서는 public 생성자가 없고 대신 정적 getInstance()메소드를 이용해서 호출될 때마다 같은 인스턴스를 반환하게 하고 있다. (스레드 안전성을 위해 getInstatnce() 메소드는 필요시점에 호출하는 홀더 기법구사하여 생글톤 인스턴스를 생성) 
+
+### 빈 유효범위 지정
+
+기본적으로 스프링의 모든 빈은 싱글톤(singleton)이다. 즉 컨테이너가 빈을 내줄 때는 기본적으로 항상 같은 인스턴스를 준다는 의미이다. 여기서 빈을 요청할 때마다 새로운 인스턴스를 호출해야하는경우도 있을것이다. 
+
+이를 위해 스프링의 <bean> 선언에서 설정할수 있는것이 `유효범위(scope)` 다.
+
+빈을 달라고 할 대마다 스프링이 새로운 빈을 생성하게 하기 위해서 다음과 같이 빈의 scope 애트리뷰트를 prototype으로 지정하면 된다. 
+
+```java
+<bean id="theStage"
+      class="com.springinaction.springidol.Stage"
+      factory-method="getInstance" />
+```
+
+```java
+<bean id="ticket"
+      class="com.springinaction.springidol.Ticket" scope="prototype" />
+```
+
+scope 애트리뷰트를 prototype으로 설정하여 빈이 할당된 모든에게 서로 다른 인스턴스가 제공되도록 보장할 수 있다. **Spring의 bean 범위는 bean 클래스 자체에서 범위 지정 규칙을 하드코딩하지 않고 bean이 생성되는 범위를 선언할 수 있게 해줍니다.**
+
+스프링에 내장된 기본 유효범위 값
+
+| 범위 | 기능 |
+| --- | --- |
+| singleton | Bean 정의 범위를 Spring 컨테이너당 단일 인스턴스로 지정합니다(기본값). |
+| prototype | Bean이 여러 번 인스턴스화되도록 허용합니다(사용당 한 번). |
+| request | Bean 정의 범위를 HTTP 요청으로 지정합니다. HTTP 요청당 하나의 인스턴스, 웹 가능 Spring 컨텍스트(예: Spring MVC)와 함께 사용되는 경우에만 유효합니다. |
+| session | Bean 정의 범위를 HTTP 세션으로 지정합니다. HTTP 세션당 하나의 인스턴스, 웹 가능 Spring 컨텍스트(예: Spring MVC)와 함께 사용되는 경우에만 유효합니다. |
+| global-session | 전역 HTTP 세션(global HTTP session) 에 대한 빈 정의 범위를 지정합니다. session 당 하나의 인스턴스. 포틀릿 컨텍스트에서 사용될 때만 유효합니다. |
+
+유효범위는 기본값인 싱글톤이 적절한 경우가 많지만, 스프링을 도메인 객체의 팩토리로 사용하고자 할 때는 아마도 프로토타입이 적합. 도매엔 객체도 프로토타입 빈으로 설정하면 다른 빈과 마찬가지로 설정에 스프링의 도움을 받는다. 그러나 스프링은 프로토타입 빈을 요청할 때마다 항상 새로운 인스턴스를 생성하므로 주의 
+
+스프링의 싱글톤 개념은 스프링 컨텐스트 범위 내로 한정된다. 클래스로더당 하나의 인스턴스를 보장하는 읿한적인 자바에서의 싱그론과는 달리, 스프링의 싱글톤 개념은 애플리케이션 컨텐스트의 빈 정의항목이다. 하나의 빈(즉, 같은 이름을 갖는 빈 인스턴스는 하나이며, 싱글톤이 아닌 경우에는 같은 이름의 빈을 가져오더라도 인스턴스가 다를 수 있다.) 인스터스를 보장함을 의미한다. 같은 클래스지만 서로 다른 이름의 빈을 정의하면, 각각은 싱글톤이라 하더라도 클래스당 빈 정의항목 개수만큼 인스터스가 생성된다. 
+
+### ****Bean 초기화 및 소멸****
+
+빈이 인스턴스화 됐지만 이를 사용하려면 초기화 작업을 수행해야 할 때각 있다. 빈이 필요 없어 컨테이너가 소멸시키려 할 때 정리 작업이 필요할 수 있다. 이를 위해 빈 생명주기에 대한 후크(hook)를 제공한다. 
+
+빈에 초기화와 정리 작업이 필요하다면, 단순히 <bean> 에 init-method 또는 destory-metod 애트리뷰트를 선언하면 된다. init-method에는 빈의 인스턴스화 직후에 호출할 메소드 이름을 지정하고, 마찬가지로 destory-method에는 컨테이너에서 빈이 소멸되기 직전에 호출할 메소드 이름을 지정한다. 
+
+```java
+<bean id="auditorium"
+      class="com.springinaction.springidol.Auditorium"
+      init-method="turnOnLights"
+     destroy-method="turnOffLights"/>
+```
+
+한 컨텍스트 정의 파일에서 많은 빈이 같은 이름을 갖는 경우 일일이 선언하지 않아도 된다. <beans>엘리먼트에 default-init-method와 default-destory-method를 지정할 수 있다. 
+
+# 2. 빈 프로퍼티 주입 - 생성자 주입과 세터 주입
+
+자바빈의 프로퍼티는 private로 선언되고 set, get 형태로 두개의 접근자 메소드가 정의 
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/162d81cb-62f3-4a96-ae49-6beea6a9daa2/Untitled.png)
+
+Instrumenetalis 클래스에는 기본 생성자가 있으므로 케니를 다음 XML처럼 스프링 <bean>으로 선언 
+
+### 단순 프로퍼티 값 주입
+
+속성 중 숫자 값이나 문자열 값에도 동일하게 사용. 스프링은 XMl 지정된 값을 프로퍼티의 타입에 따라 알아서 변환. 
+
+### 다른 빈 참조
+
+다른 부분은 스프링에서 빈을 얻을 때 지정한 이름만 있고 서비스에 따라 코드가 실행 
+
+이는 스프링보다는 ‘인터페이스를 통해 코딩’한 결과 스프링은 이런 이유로 ㅇㄴ터페이스 사용을 적극 추천한다. 인터페이스를 적극적으로 사용하고 DI가 힘을보태면 이렇게 느스한 결합이 가능하다. 
+
+### 내부 빈 주입
+
+어떤 빈을 여러 다른 빈들이 공동으로 사용해야 할 때 사용하는 스프링기법이다.
+
+inner class 개념 즉 내부 클래스는 어떤 클래스의 내부에 정의되는 클래스이다. 마찬가지로 내부 빈은 다른 빈의 내부에서 정의 되는 빈을 말한다. 
+
+내부 빈에는 id 애트리뷰트가 없다. 내부 빈에 ID를 선언해도 스프링이 문제는 없지만 현실적으로 ID를 이용해서 내부 빈을 참조할수는 없기에 의미가 없다. 내부빈은 재사용이 안된다는 단점이 있다. 즉, 내부 빈은 자신을 참조하는 빈의 프로퍼티로 딱 한 번 주입되며, 그 외의 빈은 이 내부 빈을 사용할 수가 없다. 
+
+또 하나의 단점이 있다면 가독성이다. 내부 빈이 많아지면 스프링XMl 컨텐스트 파일이 읽기 어려워진다. 
+
+| 컬렉션용 엘리먼트 | 용도 |
+| --- | --- |
+| <list> | 값 목록 연결, 중복 허용 |
+| <set> | 중복되지 않도록 일련의 값 연결 |
+| <map> | 이름과 값이 모든 유형일 수 있는 이름-값 쌍 컬렉션 연결 |
+| <props> | 이름과 값이 모두 문자열인 이름-값 쌍의 컬렉션 연결 |
+
+| 기인하다 | 목적 |
+| --- | --- |
+| 열쇠 | 맵 항목의 키를 문자열로 지정합니다. |
+| 키 참조 | Spring 컨텍스트에서 빈에 대한 참조로 맵 항목의 키를 지정합니다. |
+| 값 | 맵 항목의 값을 문자열로 지정합니다. |
+| 값 참조 | Spring 컨텍스트에서 빈에 대한 참조로 맵 항목의 값을 지정합니다. |
+
+# 3. 빈 와이어링
+
+### 스프링의 p 네임스페이스를 이용한 프로퍼티 와이어링
+
+p 네임스페이스란 스키마 URI를 가져간다. 
+
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:p="http://www.springframework.org/schema/p"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+```
+
+<property>와 p 네임스페이스 중에 선택은 개 발자가 선택한다. 
+
+p 네임스페이스의 주요 이점은 간결하다. 
+
+### 컬렉션 와이어링
+
+J**ava에 여러 종류의 컬렉션이 있는 것처럼 Spring에서는 여러 종류의 컬렉션을 주입할 수 있습니다.**
+
+**list , set**
+
+<list>처럼 <set> 엘리먼트도 프로퍼티가 배열이나 java.util.collection 하위 타입인 경우에 사용 가능하다. java.util.List 타입의 프로퍼티에 <set>을 사용할 수 있는 것이 이상하긴 해도 문제 없다. List의 모든 멤버가 고유<unique> 함을 보장받을 수 있다. 
+
+```java
+<bean id="hank"
+      class="com.springinaction.springidol.OneManBand">
+  <property name="instruments">
+    <list>
+      <ref bean="guitar" />
+      <ref bean="cymbal" />
+      <ref bean="harmonica" />
+    </list>
+  </property>
+</bean>
+```
+
+list 선언
+
+```java
+java.util.List<Instrument> instruments;
+or
+Instrument[] instruments;
+```
+
+set 선언
+
+```java
+<bean id="hank"
+      class="com.springinaction.springidol.OneManBand">
+  <property name="instruments">
+    <set>
+      <ref bean="guitar" />
+      <ref bean="cymbal" />
+      <ref bean="harmonica" />
+      <ref bean="harmonica" />
+    </set>
+  </property>
+</bean>
+```
+
+**맵<MAP> 선언**
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3e260db4-f38d-4a20-9fce-c40ee69c7a1d/Untitled.png)
+
+<map>은엔트리의 키와 값 중 하나라도 String 타입이 아닌 경우에 사용할 수 있는 유일한 방법이다. 엔트리의 키와 값이 모두 String 이라면 props도 사용이 가능하다. 
+
+**<entry>in a 는 <map>키와 값으로 구성되며 둘 중 하나는 기본 값이거나 다른 빈에 대한 참조일 수 있습니다. 이러한 속성은 의 키와 값을 지정하는 데 도움이 <entry>됩니다.**
+
+프로퍼티형태의 컬렉션
+
+엔트리의 키와 값이 모두 Strin인 경우에는 맵 대신 java.util.Properties를 사용하는 것이 더 자연스러울 것이다. 
+
+Properties 클래스는 거의 맵과 같은 목적으로 사용하지만 엔트리의 ㅣ와 값이 String이면 이에 좀 더 적합한 메소드를 제공한다. 
+
+- <property>는 빈의 프로퍼티에 값을 주입하는 데 사용하느 엘리먼트다.
+- <props>는 [java.util.Properties](http://java.util.Properties) 타입의 컬렉션 값을 정의하는데 사용하는요소이다.
+- <prop>은 <props> 컬렉션의 멤버 값을 정의하는데 사용하는 엘리먼트이다.
+
+**널 와이어링**
+
+명시적으로 null을 사요해야하는 경우 중 하나는 오토와이어링을 사용하 때다.
+
+**표현식 와이어링 (SpEL)**
+
+지금까지 빈 프로퍼티와 생성자 인자에 할당한 정보는 스프링 설정 XML에 정적으로 정의돼있었따. 
+
+강력하지만 간결한 방법인 스프링 **표현식 와이어링(Spring Expression LAnguage, SpEL)**를 도입
+
+- ID로 빈을 참조하는 기능
+- 메소드 호출과 객체의 프로퍼티 액세스
+- 값의 수학, 관계, 그리고 논리 연산
+- 정규 표현식 매칭
+- 컬렉션 처리
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/daaf2576-63f8-4069-b159-61bd74dc2bf2/Untitled.png)
+
+**SpEL에는 표현식 값을 조작하는 데 사용할 수 있는 여러 연산자가 포함되어 있습니다.**
+
+| 작업 유형 | 연산자 |
+| --- | --- |
+| 산수 | +, -, *, /, %, ^ |
+| 관계형 | <, >, ==, <=, >=, It, gt, eq, le, ge |
+| 논리적 | and, or, not, ! |
+| 가정 어구 | ?: (ternary), ?: (Elvis) |
+| 정규 표현식 | matches |
+
+**SpEL에는 표현식 값을 조작하는 데 사용할 수 있는 여러 연산자가 포함되어 있습니다.**
+
+| 작업 | 상징적 | 텍스트 |
+| --- | --- | --- |
+| 같음 | == | eq |
+| 미만 | < | lt |
+| 작거나 같음 | <= | le |
+| 보다 큰 | > | gt |
+| 크거나 같음 | >= | ge |
+
+**SpEL에는 표현식 값을 조작하는 데 사용할 수 있는 여러 연산자가 포함되어 있습니다.**
+
+| 운영자 | 작업 |
+| --- | --- |
+| AND | 논리적 AND 연산 표현식이 참이 되려면 양쪽 모두 참으로 평가해야 합니다. |
+| OR | 논리적 OR 연산 표현식이 참이 되려면 어느 쪽이든 참으로 평가해야 합니다. |
+| NOT 또는 ! | 논리적 NOT 연산. 작전의 대상을 부정한다 |
+
+SpEL 표현식 와이어링 관련해서는 나중에 참고해도 가능 여기서는 넘어가자
