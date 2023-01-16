@@ -1,0 +1,229 @@
+# 1장 Core Spring
+
+
+# 1. Spring
+
+<aside>
+💡 스프링 프레임워크의 가장 핵심적인 두 개의 기능인 종속객체 주입(DI:Dependency Injection)과 애스펙트 지향 프로그래밍 (AOP:Aspect-Oriented Programming)을 알아본다. 이 둘은 이책에서 사용하는 스프링의 기본개념으로 이해하고 넘어가야한다.
+
+</aside>
+
+EJB : Enterprise JavaBeans 
+
+선언전 프로그래밍 모델이 트랜잭션이나 보안 같은 개발의 기반 구조를 상당 부분 간소화에 기여한 구프레임워크 
+
+애스펙트 지향 프로그래밍 
+
+AOP : Aspect-Oriented Programming, 
+
+종속객체 주입
+
+DI : Dependency Injection 
+
+EJB도 POJO 지향 프로그래밍 모델을 사용할 수 있도록 변화 
+
+DI와 AOP 개념을 채택하면서 EJB는 에전보다 간결해짐 
+
+<aside>
+💡 종속객체 주입, 즉 DI는 스프링에서 가장 기본이 되면서도 매우 중요한 의미를 갖는다. 기존에 가장 많이 쓰이던 표현은 ‘의존성 주입’ 하지만 이 표현은 ‘없는 의존성을 만들어 주입 한다’는 오해를 일으키고, 이 때문에 DI의 이해가 어려웠다고 생각한다 DI는 없는 의존성을 주입하는것이 아니라 의존성은 이미 존재하되, 실제 객체가 필요로 하는 종속객체를 주입하는 것을 의미한다. 따라서 의존성 주입보다 뜻이 명확화도록 ‘종속객체 주입’이라는 표현을 사용하는것이다.
+
+</aside>
+
+<aside>
+💡 빈(Bean)
+스프링에서는 애플리케이션 컴포넌트를 가리켜 ‘빈(bean)’과 ‘자바빈(JavaBean)’이라는 용어를 자유롭게 사용하고 있지만. 이것이 꼭 자바빈 규약(JavaBeans Specification)전체를 문자 그대로 지켜야 한다는 의미는 아니지만 자바빈 정의를 사용
+
+</aside>
+
+# POJO란
+
+전형적인 예 EJB 2 시대의 무상태 세션 빈(stateless session bean) 
+
+session bean인터페이스는 여러 생명주기 콜백 메소드  구현, session bean인터페이스가 EJB의 생명주기에 강제로 연결 
+
+반면 Spring은 API를 이용하여 애플리케이션 코드의 분산을 막는다. 
+
+스프링이 POJO에 힘을 불어넣는 법 중 하나는 DI를 활용한 조립
+
+# 종속객체 주입 (DI)
+
+결합도가 높은 코드는 한편으로 테스트와 재활용이 어렵고 이해하기 어려우며 오류를 하나 수정하면 다른 오류가 발생하는 경향이 있다. 반면에 전혀 결합이 없는 코드는 아무것도 할 수 없다. 
+
+반면에 DI를 이용하면 객체는 시스템에서 각 객체를 조율하는 제3자에 의해생성 시점에 종속객체(dependeny)가 부여된다. 객체는 종속객체를 생성하거나 얻지 않는다. 즉 종속객체는 종속객체가 필요한 객체에 주입된다.
+
+종속객체 주입을 생성자 주입(constructor injection)이락고 한다. 
+
+특정 구현체에 결합되어지지 않으면 인터페이스를 구현하기만 하면 요청, 전송에 문제각 되지 않는것이 DI의 주요 이점인 ‘느슨한 결합도’이다. 어떤 객체가 자신이 필요로 하는 종속객체를 인터페이스를 통해서만 알고 있다면 (구현 클래스나 인스턴스화 되는 방법이 아닌) 사용하는 객체 쪽에는 아무런 변경 없이 종속객체를 다른 구현체로 바꿀 수 있다. 
+
+- 종속객채 주입은 객체가 스스로 종속객체를 획득하는 것과는 반대로 객체에 종속객체가 부여되는 것을 의미한다.
+
+와이어링이란
+
+애플리케이션 컴포넌트 간의 관계를 정하는것, 가장 일반적인 방법은 XML을 이용하는 방법 
+
+```java
+<?xml vesion = "1.0" ~>
+<bean id="knigth" class = "com.~.~>
+	<construjctor-arg ref="quest" /> => 원정 빈 주입
+</bean>
+
+<bean id="quest"
+	class="com.~.~" />
+
+</bean>
+```
+
+스프링 애플리케이션에서 애플리케이션 컨텍스트(Application context)는 빈에 관한 정의들을 바탕으로 빈을 엮어 준다. 스프링 애플리케이션 컨텍스트는 애플리케이션을 구성하는 객체의 생성과 와이어링을 실행한다.
+
+- 참고
+    - DI를 상세히 다루는 단지 R.vmfktkskdml [Dependenct Injection] 책 읽어보기
+
+# 애스펙트 적용
+
+DI가 소프트웨어컴포넌트 결합도를 낮춰 준다면, 애스펙트 지향 프로그래밍은 애플리케이션 전체에 걸쳐 사용되는 기능을 재사용할 수 있는 컴포넌트에 담을 수 있게 해준다. 
+
+AOP는 시스템 서비스를 모듈화해서 컴포넌트에 선언적으로 적용할 수 있게 해 준다. AOP를 이용하면 시스템 서비스에 대해서는 전혀 알지 못하면서 응집도가 높고 본연의 관심사에 집중하는 컴포넌트를 만들 수 있다. 즉 애스펙트는 POJO를 평범하게 만든다. 
+
+핵심 기능을 구현하는 모듈에는 아무런 변화도 가하지 않고 추가적인 기능을 선어적으로 적용할 수 있다. 이 개념은 매우 강력한 개념으로서, 보안, 트랜잭션, 로깅 등을 처리하느라고 애플리케이션의 핵심 비즈니스 로직이 지저분해지는 것을 막아 준다. 
+
+Spring은 템플릿에 상투적인 코드를 캡술화하여 반복적인 코드를 제거하는 방법을 찾는다. 스프링의 JDbcTemplate은 전통적인 JDBC에서 필요한 형식이 없어도 데이터베이스 작업을 수행할 수 있게 한다. 
+
+---
+
+# 2. 빈을 담는 그릇, 컨테이너
+
+스프링 애플리케이션에서는 스프링 컨테이너에서 객체가 태어나고, 자라고, 소멸한다. 이들의 전체 생명주기(생성에서 소멸까지)를 관리한다. 
+
+스프링 컨테이너는 스프링 프레임워크의 핵심부에 위치한다. 스프링 컨테이너는 종속객체를 주입을 이용하여 애플리케이션을 구성하는 컴포넌트를 관리하며, 협력 컴포넌트 간 연관관계 형성도 여기에서 이뤄진다. 이러한 짐을 컨테이너에 덜어버린 객체들은 더 명확하고 이해하기 쉬우며, 재상용을 촉진, 단위 테스트가 용이해진다. 
+
+### 스프링 컨테이너 종류
+
+- 빈팩토리(org.springframework.beans.factory.BeanFactory)
+    
+    이는 DI에 대한 기본적인 지원을 제공하는 가장 단순한 컨테이너 
+    
+- 애플리케이션 컨텍스트 (org.springframework.beans.factory.BeanFactory)
+    
+    빈팩토리를 확장해 프로퍼티 파일에 텍스트 메시지를 읽고 해당 이벤트 리스터에 대한 애플리케이션 이벤트 발행 같은 애플리케이션 프레임워크 서비스를 제공하는 컨테이너
+    
+
+**애플리케이션 컨텍스트**
+
+- ClassPathXmlApplicationContext - 클래스패스에 위치한 XML 파일에서 컨텍스트 정의 내용 로드
+- FileSystemXmlApplicationContext - 파일 시스템에서, 즉 파일 경로 지정된 XMl 정의 내용 로드
+- XmlWebApplicationContext - 웹 애플리케이션에 포함된 XML파일에서 컨텐스트 정의 내용 로드
+
+### 빈의 생명주기
+
+자바의 new 키워드를 이용하거나 역지렬화(deseialization)을 통해 빈을 인스턴스화하고 이를 바로 사용한다. 빈이 더 이상 사용되지 않으면 가비지 컬렉션 (garbage collection) 후보가 되어 언젠가는 메모리 덩어리가 됐다가소멸된다. 
+
+반면에 스프링 컨테이너 내에서 빈의 생명주기는 정교하다. 빈이 생성될 때 스프링이 제공하는 커스터마이징 기화를 이용하기 위해 스프링의 빈 생명주기 이해는 필수다. 
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0a68e60b-b1e0-44c9-9458-550e0c20d634/Untitled.png)
+
+보시다시피 빈 팩토리는 빈을 사용할 준비가 되기 전에 여러 설정 단계를 수행합니다. [그림 1.5](https://livebook.manning.com/book/spring-in-action-third-edition/chapter-1/ch01fig05) 를 더 자세히 분석하면 다음과 같습니다.
+
+1. Spring은 Bean을 인스턴스화합니다.
+2. Spring은 빈의 속성에 값과 빈 참조를 주입합니다.
+3. bean이 BeanNameAware를 구현하면 Spring은 bean의 ID를 setBeanName() 메서드에 전달합니다.
+4. 빈이 BeanFactoryAware를 구현하면 setBeanFactory() 메서드를 호출하고 빈 팩토리 자체를 전달합니다.
+5. bean이 구현하는 ApplicationContextAware를 구현하면, 스프링이 setApplicationContext() 메소드를 호출하여 둘러싸는 애플리케이션 컨텍스트에 대한 참조를 전달합니다.
+6. Bean 중 하나라도 BeanPostProcessor 인터페이스를 구현하면 Spring은 해당
+    
+    postProcessBeforeInitialization() 메소드를 호출합니다.
+    
+7. Bean이 InitializingBean 인터페이스를 구현하면 Spring은 해당 afterPropertiesSet()
+    
+    메소드를 호출합니다. 마찬가지로 bean이 로 선언된 경우 init-method 지정된 초기화 메서드가 호출됩니다.
+    
+8. 빈이 BeanPostProcessor를 구현하면, Spring은 해당 postProcessAfterInitialization() 메서드를 호출합니다.
+9. 이 상태가 되면 bean은 애플리케이션에서 사용할 준비가 되어 있으며 애플리케이션 컨텍스트가 소멸될 때까지 애플리케이션 컨텍스트에 남아 있습니다.
+10. Bean이 DisposableBean 인터페이스를 구현하면 Spring은 해당 destroy() 메소드를 호출합니다. 마찬가지로 빈이 로 선언된 destroy-method 와 함께 선언됐으면, 지정되누 메서드가 호출됩니다.
+
+이제 Spring 컨테이너를 생성하고 로드하는 방법을 알았습니다. 그러나 빈 용기는 그 자체로는 좋지 않습니다. 당신이 뭔가를 넣지 않는 한 아무것도 포함하지 않습니다. Spring DI의 이점을 얻으려면 애플리케이션 개체를 Spring 컨테이너에 연결해야 합니다
+
+---
+
+### 스프링 모듈
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5f09428a-d4e5-4c82-9d14-7f05029e8064/Untitled.png)
+
+데이터 액세스와 통합
+
+JDBC와 DAO(Data Access Objects, 데이터 액세스 객체)모듈은 이렇게 반복되는 코드를 추상화하므로 이 모듈을 이용하면 데이터 베이스 관련 코드를 깔끔하고 간단하게 만들 수 있고, 데이터베이스 리소스를닫지 않아서 발생할 수 있는 문제를 예방 가능
+
+스프링의 ORM 모듈은 JDBC보다 객체 관계 매핑(ORM:Object-Relational Mapping) 도구를 선호하는 개발자를 위한 것. 스프링의 ORM모듈은 DAO 모듈 위에 올라가서 ORM 솔루션용 DAO를 만드는 편리한 방법을 제공 
+
+웹과 리모팅
+
+MVC 패러다임은 사용자 인터페이스가 애플리케이션 로직과 분리되는 웹 애플리케이션을 만드는 경우에 일반적으로 사용되는 접근 방식 이다. 자바의 유명한 MVC프레임워크 중 아파치 스트럿츠, JSF, 웹워크, 태피스트리 등  ㅌ 
+
+스**프링 웹 흐름**
+
+Spring Web Flow는 Spring의 핵심 MVC 프레임워크를 기반으로 구축되어 사용자를 목표(마법사 또는 장바구니)로 안내하는 대화형 흐름 기반 웹 애플리케이션 구축을 지원합니다. Spring Web Flow에 대한 자세한 내용은 [8장 에서 설명하고](https://livebook.manning.com/book/spring-in-action-third-edition/chapter-8/ch08) [http://www.springsource.org/webflow](http://www.springsource.org/webflow) 의 홈페이지에서 Spring Web Flow에 대해 자세히 알아볼 수 있습니다 .
+
+**스프링 웹 서비스**
+
+핵심 Spring 프레임워크는 Spring bean을 웹 서비스로 선언적으로 게시하기 위해 제공하지만 이러한 서비스는 틀림없이 구조적으로 열등한 최종 계약 모델을 기반으로 합니다. 서비스에 대한 계약은 bean의 인터페이스에서 결정됩니다. Spring Web Services는 서비스 계약을 충족하기 위해 서비스 구현이 작성되는 계약 우선 웹 서비스 모델을 제공합니다.
+
+이 책에서는 Spring-WS에 대해 이야기하지 않겠지만 [http://static.springsource.org/spring-ws/sites/2.0](http://static.springsource.org/spring-ws/sites/2.0) 의 홈페이지에서 자세한 내용을 읽을 수 있습니다 .
+
+**스프링 시큐리티**
+
+보안은 많은 애플리케이션에서 중요한 측면입니다. Spring AOP를 사용하여 구현된 Spring Security는 Spring 기반 애플리케이션을 위한 선언적 보안 메커니즘을 제공합니다. [9장](https://livebook.manning.com/book/spring-in-action-third-edition/chapter-9/ch09) 에서 애플리케이션에 Spring Security를 추가하는 방법을 살펴보겠습니다 . 추가 탐색을 위해 Spring Security의 홈 페이지는 [http://static.springsource.org/spring-security/site](http://static.springsource.org/spring-security/site) 입니다.
+
+**스프링 통합**
+
+많은 엔터프라이즈 애플리케이션은 다른 엔터프라이즈 애플리케이션과 상호 작용해야 합니다. Spring Integration은 Spring의 선언적 스타일에서 몇 가지 일반적인 통합 패턴의 구현을 제공합니다.
+
+이 책에서는 Spring Integration을 다루지 않을 것입니다. 그러나 Spring Integration에 대한 자세한 내용을 보려면 Mark Fisher, Jonas Partner, Marius Bogoevici 및 Iwein Fuld 의 *Spring Integration in Action 을 살펴보십시오.* [또는 http://www.springsource.org/spring-integration](http://www.springsource.org/spring-integration) 에서 Spring Integration 홈페이지를 방문할 수 있습니다 .
+
+**스프링 배치**
+
+데이터에 대한 대량 작업을 수행해야 하는 경우 일괄 처리보다 좋은 것은 없습니다. 배치 애플리케이션을 개발하려는 경우 Spring Batch를 사용하여 이를 수행하기 위해 Spring의 강력한 POJO 지향 개발 모델을 활용할 수 있습니다.
+
+Spring Batch는 이 책의 범위를 벗어납니다. 그러나 Thierry Templier와 Arnaud Cogoluègnes는 그들의 책인 *Spring Batch in Action* 에서 여러분을 계몽할 것 입니다. [http://static.springsource.org/spring-batch](http://static.springsource.org/spring-batch) 의 홈페이지에서도 Spring Batch에 대해 알아볼 수 있습니다 .
+
+**스프링 소셜**
+
+소셜 네트워킹은 인터넷에서 떠오르는 추세이며 점점 더 많은 응용 프로그램이 Facebook 및 Twitter와 같은 소셜 네트워킹 사이트에 통합되고 있습니다. 이것이 관심 있는 종류의 일이라면 Spring의 소셜 네트워킹 확장인 Spring Social을 살펴보고 싶을 것입니다.
+
+Spring Social은 비교적 새롭기 때문에 이 책에 포함되지 않았습니다. 그러나 이에 대한 자세한 내용은 [http://www.springsource.org/spring-social](http://www.springsource.org/spring-social) 에서 확인할 수 있습니다.
+
+**스프링 모바일**
+
+모바일 애플리케이션은 소프트웨어 개발의 또 다른 중요한 영역입니다. 스마트폰과 태블릿 장치는 많은 사용자가 선호하는 클라이언트로 자리 잡고 있습니다. Spring Mobile은 모바일 웹 애플리케이션 개발을 지원하기 위한 Spring의 새로운 확장입니다.
+
+Spring Mobile과 관련된 것은 Spring Android 프로젝트입니다. 이 새 프로젝트는 내가 이 글을 쓰는 시점에서 한 달도 채 안되어 Spring Framework가 제공하는 단순성을 Android 기반 장치용 기본 애플리케이션 개발에 도입하는 것을 목표로 합니다. 처음에 이 프로젝트는 Android 애플리케이션 내에서 사용할 수 있는 Spring 버전 RestTemplate( 에 대해 알아보려면 [11장 참조)을 제공합니다.](https://livebook.manning.com/book/spring-in-action-third-edition/chapter-11/ch11)RestTemplate
+
+다시 말하지만 이러한 프로젝트는 새로운 프로젝트이며 *Spring in Action* 범위를 벗어 납니다. [그러나 http://www.springsource.org/spring-mobile](http://www.springsource.org/spring-mobile) 및 [http://www.springsource.org/spring-android](http://www.springsource.org/spring-android) 에서 이에 대해 자세히 알아볼 수 있습니다 .
+
+**스프링 동적 모듈**
+
+Spring-DM(Spring Dynamic Modules)은 Spring의 선언적 종속성 주입과 OSGi의 동적 모듈성을 혼합합니다. Spring-DM을 사용하면 OSGi 프레임워크 내에서 선언적으로 서비스를 게시하고 소비하는 여러 고유하고 응집력이 있으며 느슨하게 결합된 모듈로 구성된 애플리케이션을 빌드할 수 있습니다.
+
+선언적 OSGi 서비스를 위한 Spring-DM 모델은 OSGi 세계에 엄청난 영향을 미치기 때문에 *OSGi Blueprint Container* 로 OSGi 사양 자체로 공식화되었습니다 . 또한 SpringSource는 Gemini OSGi 프로젝트 제품군의 일부로 Spring-DM을 Eclipse 프로젝트로 전환했으며 현재 Gemini Blueprint로 알려져 있습니다.
+
+**스프링 LDAP**
+
+종속성 주입 및 AOP 외에도 Spring Framework 전체에 적용되는 또 다른 일반적인 기술은 JDBC 쿼리 또는 JMS 메시징과 같은 불필요하게 복잡한 작업에 대한 템플릿 기반 추상화를 만드는 것입니다. Spring LDAP는 LDAP에 대한 Spring 스타일 템플릿 기반 액세스를 제공하여 LDAP 작업에 일반적으로 포함되는 상용구 코드를 제거합니다.
+
+Spring LDAP에 대한 자세한 내용은 [http://www.springsource.org/ldap](http://www.springsource.org/ldap) 에서 확인할 수 있습니다 .
+
+**스프링 리치 클라이언트**
+
+웹 기반 응용 프로그램은 기존 데스크톱 응용 프로그램에서 스포트라이트를 훔친 것 같습니다. 하지만 아직 Swing 애플리케이션을 개발 중인 몇 안 되는 사람 중 한 명이라면Spring의 강력한 기능을 Swing에 제공하는 풍부한 애플리케이션 툴킷인 Spring Rich Client를 확인하고 싶습니다.
+
+**스프링.NET**
+
+.NET 프로젝트에 배치된 경우 종속성 주입 및 AOP를 포기할 필요가 없습니다. [Spring.NET](http://spring.net/) 은 Spring과 동일한 느슨한 결합 및 측면 지향 기능을 제공하지만 .NET 플랫폼용입니다.
+
+핵심 DI 및 AOP 기능 외에도 [Spring.NET](http://spring.net/) 에는 ADO.NET, NHibernate, ASP.NET 및 MSMQ 작업을 위한 모듈을 포함하여 .NET 개발을 단순화하기 위한 여러 모듈이 함께 제공됩니다.
+
+Spring.NET에 대해 자세히 알아보려면 [http://www.springframework.net](http://www.springframework.net/) 을 방문하십시오
+
+**스프링 플렉스**
+
+Adobe의 Flex 및 AIR는 리치 인터넷 애플리케이션 개발을 위한 가장 강력한 옵션 중 하나를 제공합니다. 풍부한 사용자 인터페이스가 서버 측의 Java 코드와 상호 작용해야 하는 경우 *BlazeDS* 라는 원격 및 메시징 기술을 사용할 수 있습니다 . Spring-Flex 통합 패키지를 사용하면 Flex 및 AIR 애플리케이션이 BlazeDS를 사용하여 서버 측 Spring Bean과 통신할 수 있습니다. 또한 Flex 애플리케이션의 신속한 애플리케이션 개발을 지원하는 Spring Roo용 애드온도 포함되어 있습니다.
+
+[http://www.springsource.org/spring-flex](http://www.springsource.org/spring-flex) 에서 Spring Flex 탐색을 시작할 수 있습니다 . ActionScript에서 Spring Framework의 많은 이점을 제공하는 [http://www.springactionscript.org](http://www.springactionscript.org/) 에서 Spring ActionScript를 확인할 수도 있습니다 .
