@@ -1,0 +1,80 @@
+테스트 주도 개발 - Test-Driven Development :By Example
+# 8장. 객체 만들기
+
+<aside>
+💡
+
+</aside>
+
+이제는 그 다음 중복인 times()를 처리해야 한다. times가 Money를 반환하도록 하면 더 비슷한 코드가 된다.
+
+```java
+Money times(int multiplier) {
+    return new Franc(amount * multiplier);
+}
+
+Money times(int multiplier) {
+    return new Dollar(amount * multiplier);
+}
+```
+
+이렇게 진행하다 보니 Money의 두 하위 클래스를 제거해도 될 것 같다. 하지만 그렇게 큰 단계를 밟아버리면 TDD를 효과적으로 보여줄 수 없으므로 조금 더 작은 단계를 진행해보도록 하자.
+
+하위 클래스에 대한 직접적인 참조가 적어진다면 하위 클래스 제거가 용이해질 것이다. 직접 참조를 제거하기 위해 Money에 Dollar를 반환하는 팩토리 메소드를 도입해보자.
+
+```java
+static Dollar dollar(int amount) {
+    return new Dollar(amount);
+}
+```
+
+테스트 코드에서도 직접 참조하는 부분을 모두 제거하여 다음과 같이 수정할 수 있다.
+
+```java
+public void testMultiplication() {
+    Money five = Money.dollar(5);
+    assertEquals(new Dollar(10), five.times(2));
+    assertEquals(new Dollar(15), five.times(3));
+}
+```
+
+하지만 아직 times가 Money에 존재하지 않으므로 컴파일 에러가 발생할 것이다. 아직은 times를 구현할 준비가 되지 않았기 때문에, Money를 추상 클래스로 변경하고 추상 메소드 times()를 선언해주자.
+
+```java
+public abstract class Money {
+    abstract Money times(int multiplier);
+}
+```
+
+그리고 Dollar를 반환하는 팩토리 메소드의 반환 클래스를 Money로 수정해주자.
+
+```java
+static Money dollar(int amount) {
+    return new Dollar(amount);
+}
+```
+
+그리고 Dollar를 직접 참조하는 다른 테스트 코드에서 역시 팩토리 메소드를 사용하도록 변경하면 코드가 한층 괜찮아졌다.(어떤 클라이언트 코드도 Dollar라는 하위 클래스의 존재를 모른다.)
+
+그리고 testFrancMultipication 역시 팩토리 메소드를 작성하여 변경하려고 보니, Dollar에 의해 모든 테스트가 검사되어 지워도 될 것 같다. 하지만 일단 남겨두도록 하고, testFrancMultipication를 수정하도록 하자.
+
+```java
+static Money franc(int amount) {
+    return new Franc(amount);
+}
+
+public void testFrancMultiplication() {
+    Money five = Money.franc(5);
+    assertEquals(Money.franc(10), five.times(2));
+    assertEquals(Money.franc(15), five.times(3));
+}
+```
+
+그리고 이제 times를 진짜 제거해보도록 하자.
+
+### 내용 검토
+
+- 동일한 메서드(time)의 두 변이형 메서드 서명부를 통일시킴으로의 중복 제거를 향해 한 단계 더전진했다.
+- 최소한 메서드 선언부만이라도 공통 상위 클래스(superclass)로 옮겼다.
+- 팩토리 메서드를 도입하여 테스트 코드에서 콘크리트 하위 클래스의 존재 사실을 분리해냈다.
+- 하위 클래스가 사라지면 몇몇 테스트는 불필요한 여분의 것이 된다는 것을 인색했다. 하지만 일단 그냥 뒀다.
