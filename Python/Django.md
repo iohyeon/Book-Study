@@ -14,4 +14,6 @@
 ### https://doragoon.tistory.com/11
 ### https://www.acmicpc.net/problem/2003
 
-### https://doragoon.tistory.com/13 (에라토스테네스의 체 알고리즘)
+# [에라토스테네스의 체 알고리즘](https://doragoon.tistory.com/13)
+
+# [선택정렬 알고리즘](https://doragoon.tistory.com/14)
