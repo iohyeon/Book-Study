@@ -17,3 +17,5 @@
 # [에라토스테네스의 체 알고리즘](https://doragoon.tistory.com/13)
 
 # [선택정렬 알고리즘](https://doragoon.tistory.com/14)
+
+# [삽입정렬 알고리즘](https://doragoon.tistory.com/15)
